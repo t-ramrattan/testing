@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^2.8.0",

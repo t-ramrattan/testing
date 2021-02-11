@@ -13,8 +13,14 @@ export class PostController {
             body,
             params
         } = req;
-        console.log(params, body);
-        res.sendStatus(200);
+        const topicName = params.topicName;
+        try {
+            this.savePost(topicName, body);
+            this.publish(topicName, body);
+            res.sendStatus(200);
+        } catch(err) {
+            res.sendStatus(500);
+        }
     }
 
     topicExists(topicName: string){
