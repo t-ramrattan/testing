@@ -33,7 +33,10 @@ describe('PostController', () => {
                 },
                 body: post
             }
-            await postController.handlePostRequest(request as any, post as any);
+            const response = {
+                sendStatus: () => {}
+            }
+            await postController.handlePostRequest(request as any, response as any);
         });
     });
 
