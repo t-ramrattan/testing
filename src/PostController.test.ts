@@ -1,11 +1,20 @@
+jest.mock('./PostDAO');
+jest.mock('./Publisher');
+
+import { PostDAO } from './PostDAO';
+import { Publisher } from './Publisher';
 import { PostController } from './PostController';
 
+let dao: PostDAO;
+let publisher: Publisher;
 let postController: PostController;
 
 describe('PostController', () => {
 
     beforeEach(() => {
-        postController = new PostController();
+        dao = new PostDAO();
+        publisher = new Publisher();
+        postController = new PostController(dao, publisher);
     });
 
     describe('topicExists', () => {
@@ -21,7 +30,7 @@ describe('PostController', () => {
     });
 
     describe('handlePostRequest', () => {
-        it.only('should save post to database', async () => {
+        it('should save post to database', async () => {
             const topicName = 'unit-test';
             const post = {
                 msg: 'hello, world!!!',
@@ -33,7 +42,11 @@ describe('PostController', () => {
                 },
                 body: post
             }
-            await postController.handlePostRequest(request as any, post as any);
+
+            const response = {
+                sendStatus: () => {}
+            }
+            await postController.handlePostRequest(request as any, response as any);
         });
     });
 

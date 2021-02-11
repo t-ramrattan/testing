@@ -8,9 +8,9 @@ export class PostController {
 
     TOPICS = ['unit-test', 'integ-test', 'e2e-test'];
 
-    constructor() {
-        this.postDAO = new PostDAO();
-        this.publisher = new Publisher();
+    constructor(postDAO: PostDAO, publisher: Publisher) {
+        this.postDAO = postDAO;
+        this.publisher = publisher;
     }
 
     handlePostRequest(req: Request, res: Response) {
@@ -25,6 +25,7 @@ export class PostController {
                 this.publisher.publish(topicName, body);
                 res.sendStatus(200);
             } catch (err) {
+                console.error(err);
                 res.sendStatus(500);
             }
         } else {
