@@ -23,9 +23,7 @@ const publish = async (topicName, post) => {
     await client.topic(topicName).publish(Buffer.from(JSON.stringify(post)));
 }
 
-app.use(bodyParser.json());
-
-app.post('/topic/:topicName', async (req, res) => {
+const postHandler = async (req, res) => {
     const {
         body,
         params = {}
@@ -41,7 +39,11 @@ app.post('/topic/:topicName', async (req, res) => {
     } else {
         res.status(400).send('invalid topic or post');
     }
-});
+}
+
+app.use(bodyParser.json());
+
+app.post('/topic/:topicName', postHandler);
 
 app.listen(PORT, () => {
     console.log(`sever started on port ${PORT}`);
