@@ -17,7 +17,18 @@ describe('PostController', () => {
         it('should return false if topics does not exists', () => {
             const topicName = 'not-unit-test';
             expect(postController.topicExists(topicName)).toBe(false);
-        });        
+        });
+    });
+
+    describe('savePost', () => {
+        it.only('should save post to database', async () => {
+            const topicName = 'unit-test';
+            const post = {
+                msg: 'hello, world!!!',
+                userId: 'abc123'
+            }
+            await postController.savePost(topicName, post);
+        });
     });
 
 });
