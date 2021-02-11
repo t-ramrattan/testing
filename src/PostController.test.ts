@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { PostController } from './PostController';
 
 let postController: PostController;

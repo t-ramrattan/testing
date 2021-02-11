@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import { PostDAO } from './PostDAO';
-const { PubSub } = require('@google-cloud/pubsub');
-
+import { Publisher } from "./Publisher";
 
 export class PostController {
     postDAO: PostDAO;
-    PROJECT_ID = process.env.PROJECT_ID;
+    publisher: Publisher;
+
     TOPICS = ['unit-test', 'integ-test', 'e2e-test'];
 
     constructor() {
         this.postDAO = new PostDAO();
+        this.publisher = new Publisher();
     }
 
     handlePostRequest(req: Request, res: Response) {
@@ -18,22 +19,20 @@ export class PostController {
             params
         } = req;
         const topicName = params.topicName;
-        try {
-            this.postDAO.savePost(topicName, body);
-            this.publish(topicName, body);
-            res.sendStatus(200);
-        } catch (err) {
-            res.sendStatus(500);
+        if (this.topicExists(topicName)) {
+            try {
+                this.postDAO.savePost(topicName, body);
+                this.publisher.publish(topicName, body);
+                res.sendStatus(200);
+            } catch (err) {
+                res.sendStatus(500);
+            }
+        } else {
+            res.status(400).send(`${topicName} does not exists`);
         }
     }
 
     topicExists(topicName: string) {
         return this.TOPICS.includes(topicName);
     }
-
-    async publish(topicName: string, post: string) {
-        const client = new PubSub({ projectId: this.PROJECT_ID });
-        await client.topic(topicName).publish(Buffer.from(JSON.stringify(post)));
-    }
-
 }
