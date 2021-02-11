@@ -5,4 +5,6 @@ Software Life Cycle:
 - We want a notification system where users can post messages to a topic. And users subscribed to that topic will receive notifications when messages are published to the topic.
 - If a user tries to post to a topic that doesn't exist we need to let the user know.
 - Append message to log
-2. 
+
+
+- can't export functions for testing. We should pull them out into a class.
