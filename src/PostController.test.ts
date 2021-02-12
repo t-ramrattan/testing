@@ -30,7 +30,7 @@ describe('PostController', () => {
     });
 
     describe('handlePostRequest', () => {
-        it('should save post to database', async () => {
+        it('should save post to database and publish to topic when topic exists', async () => {
             const topicName = 'unit-test';
             const post = {
                 msg: 'hello, world!!!',
@@ -42,12 +42,57 @@ describe('PostController', () => {
                 },
                 body: post
             }
-
-            const response = {
-                sendStatus: () => {}
-            }
+            const sendStatus = jest.fn();
+            const response = { sendStatus };
             await postController.handlePostRequest(request as any, response as any);
+            expect(publisher.publish).toHaveBeenLastCalledWith(topicName, post);
+            expect(dao.savePost).toHaveBeenLastCalledWith(topicName, post);
+            expect(sendStatus).toHaveBeenCalledWith(200);
         });
+
+        it('should return status 400 if topic does not exist', async () => {
+            const topicName = 'not-in-list';
+            const post = {
+                msg: 'hello, world!!!',
+                userId: 'abc123'
+            };
+            const request = {
+                params: {
+                    topicName
+                },
+                body: post
+            }
+            const send = jest.fn();
+            const status = jest.fn().mockImplementation(() => {
+                return { send }
+            });
+            const response = { status };
+            await postController.handlePostRequest(request as any, response as any);
+            expect(status).toHaveBeenCalledWith(400);
+            expect(publisher.publish).toHaveBeenCalledTimes(0);
+            expect(dao.savePost).toHaveBeenCalledTimes(0);
+        });
+
+        it('should return status 500 save to dao fails', async () => {
+            const topicName = 'unit-test';
+            const post = {
+                msg: 'hello, world!!!',
+                userId: 'abc123'
+            };
+            const request = {
+                params: {
+                    topicName
+                },
+                body: post
+            };
+            (dao.savePost as jest.Mock).mockImplementation(() => {
+                throw new Error();
+            });
+            const sendStatus = jest.fn();
+            const response = { sendStatus };            
+            await postController.handlePostRequest(request as any, response as any);
+            expect(sendStatus).toHaveBeenCalledWith(500);
+        });        
     });
 
 });
