@@ -1,10 +1,13 @@
-const { PubSub } = require('@google-cloud/pubsub');
+import { PubSub } from "@google-cloud/pubsub";
 
 export class Publisher {
-    PROJECT_ID = process.env.PROJECT_ID;
+    pubSub: PubSub;
+
+    constructor(pubSub: PubSub) {
+        this.pubSub = pubSub;
+    }
     
-    async publish(topicName: string, post: string) {
-        const client = new PubSub({ projectId: this.PROJECT_ID });
-        await client.topic(topicName).publish(Buffer.from(JSON.stringify(post)));
+    async publish(topicName: string, post: object) {
+        await this.pubSub.topic(topicName).publish(Buffer.from(JSON.stringify(post)));
     }    
 }

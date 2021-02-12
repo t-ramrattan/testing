@@ -14,7 +14,7 @@ describe('PostController', () => {
 
     beforeEach(() => {
         dao = new PostDAO({});
-        publisher = new Publisher();
+        publisher = new Publisher({} as any);
         postController = new PostController(dao, publisher);
     });
 
