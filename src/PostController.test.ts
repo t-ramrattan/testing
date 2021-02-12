@@ -1,5 +1,6 @@
 jest.mock('./PostDAO');
 jest.mock('./Publisher');
+jest.mock('mongodb')
 
 import { PostDAO } from './PostDAO';
 import { Publisher } from './Publisher';
@@ -12,7 +13,7 @@ let postController: PostController;
 describe('PostController', () => {
 
     beforeEach(() => {
-        dao = new PostDAO();
+        dao = new PostDAO({});
         publisher = new Publisher();
         postController = new PostController(dao, publisher);
     });
@@ -89,10 +90,10 @@ describe('PostController', () => {
                 throw new Error();
             });
             const sendStatus = jest.fn();
-            const response = { sendStatus };            
+            const response = { sendStatus };
             await postController.handlePostRequest(request as any, response as any);
             expect(sendStatus).toHaveBeenCalledWith(500);
-        });        
+        });
     });
 
 });
